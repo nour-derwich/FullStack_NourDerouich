@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import api from "../lib/api";
 import { Products } from "../types/types";
+import Searchbar from "./Searchbar";
 
 export default function AllProducts() {
   const [products, setProducts] = useState<Products[] | null>(null);
@@ -9,7 +10,7 @@ export default function AllProducts() {
     const getProducts = async () => {
       try {
         const res = await api.get("/");
-        setProducts(res.data);
+        setProducts(res.data.products);
       } catch (error) {
         console.error("Error fetching Products", error);
       }
@@ -18,8 +19,10 @@ export default function AllProducts() {
   }, []);
 
   return (
+  
     <div className="flex flex-col">
       <main className="p-4 md:p-6">
+      <Searchbar products={products} setProducts={setProducts} />
         <section className="columns-xs">
           {products &&
             products.map((product) => (

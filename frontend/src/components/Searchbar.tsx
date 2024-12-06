@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import _ from "lodash";
 import api from "../lib/api";
 import { Input } from "../components/ui/input";
 import { 
@@ -12,7 +11,7 @@ import {
   SelectValue 
 } from "./ui/select";
 import { Products } from "../types/types";
-
+import _ from "lodash";
 export default function Searchbar({
   products,
   setProducts,
@@ -28,7 +27,7 @@ export default function Searchbar({
     const getCategories = async () => {
       try {
         const res = await api.get("/");
-        const uniqueCategories = [...new Set(res.data.map((p: Products) => p.category))];
+        const uniqueCategories: string[] = [...new Set((res.data.products as Products[]).map((p: Products) => p.category))];
         setCategories(uniqueCategories);
       } catch (error) {
         console.error("Error fetching categories", error);
@@ -42,7 +41,7 @@ export default function Searchbar({
     const fetchProducts = async () => {
       try {
         const res = await api.get("/");
-        let filteredProducts = res.data;
+        let filteredProducts = res.data.products as Products[];
 
         // Filter by search query
         if (searchQuery) {
