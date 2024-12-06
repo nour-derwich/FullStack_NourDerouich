@@ -3,7 +3,6 @@ import productsData from '../data/products.json';
 
 const router = express.Router();
 
-// Define the TypeScript interfaces for the data structure
 interface Product {
   id: number;
   title: string;
@@ -14,7 +13,7 @@ interface Product {
   rating: number;
   stock: number;
   tags: string[];
-  brand?: string; // Made brand optional
+  brand?: string;  // Optional brand, handled with a default value
   sku: string;
   weight: number;
   dimensions: {
@@ -51,21 +50,23 @@ interface ProductResponse {
   limit: number;
 }
 
-// Preprocess the data to handle missing brand properties
+
 const processedProducts = productsData.products.map((product) => ({
   ...product,
-  brand: product.brand || "Unknown Brand", // Provide a default value for missing brands
+  brand: product.brand || "Unknown Brand", // Default brand if missing
 }));
 
+// Create the final response structure with paginated products
 const products: ProductResponse = {
   ...productsData,
   products: processedProducts,
 };
 
+// GET all products with search and pagination
 router.get('/', (req, res) => {
   const { search, page = 1, limit = 10 } = req.query;
 
-  // Filter products based on search query
+  // Filtering logic
   let filteredProducts = products.products;
 
   if (search) {
@@ -77,7 +78,7 @@ router.get('/', (req, res) => {
     );
   }
 
-  // Paginate the filtered products
+  // Pagination logic
   const startIndex = (Number(page) - 1) * Number(limit);
   const endIndex = startIndex + Number(limit);
   const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
@@ -90,6 +91,7 @@ router.get('/', (req, res) => {
   });
 });
 
+// GET single product by ID
 router.get('/:id', (req, res) => {
   const productId = Number(req.params.id);
   const product = products.products.find((p) => p.id === productId);
